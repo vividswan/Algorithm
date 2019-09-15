@@ -34,6 +34,7 @@
 >    - 라인스위핑
 >    - 분할 정복(Divide and Conquer)
 >    - 완전 탐색(Brute-force)
+>       - 순열, 조합
 >    - 이분 탐색(Binary search)
 >    - 재귀(Recursion)
 >    - 최장 증가 수열(LIS)
