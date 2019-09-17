@@ -1,5 +1,5 @@
 # Algorithm
-알고리즘 및 자료구조
+알고리즘 및 자료구조 (BOJ_Solution)
 
 > - DFS, BFS
 >
