@@ -1,12 +1,16 @@
 #include <iostream>
-#include <cmath>
 using namespace std;
 long long n;
-long long cnt = 1;
+long long go = 1;
+long long nn = 2;
 int main(void) {
 	scanf("%lld", &n);
-	while (cnt + (cnt + 1) * (pow(2, (cnt + 1)) - 1) < n) {
-		cnt++;
+	while (1) {
+		nn *= 2;
+		long long res = nn * (go + 1) - 1;
+		if (n <= res) break;
+		go++;
 	}
-	printf("%lld\n", cnt);
+	printf("%lld\n", go);
+	return 0;
 }
