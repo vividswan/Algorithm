@@ -56,16 +56,6 @@ int main(void) {
 			}
 		}
 	}
-	/*
-	for (int j = 1; j <= 9; j++) {
-		for (int k = 1; k <= 9; k++) {
-			for (int l = 1; l <= 9; l++) {
-				int value = 100 * j + 10 * k + l;
-				if (!vis[value]) printf("%d\n", value);
-			}
-		}
-	}
-	*/
 	printf("%d\n", res);
 	return 0;
 }
