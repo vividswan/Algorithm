@@ -1,50 +1,48 @@
 #include <iostream>
 #include <cstring>
 using namespace std;
+bool isConsistent = true;
 struct Trie {
-	Trie* next[10];
-	bool sen_end;
+	bool isWord;
+	bool existChild;
+	Trie* childTrie[10];
 	Trie() {
-		memset(next, 0, sizeof(next));
-		sen_end = false;
+		isWord = false;
+		existChild = false;
+		for (int i = 0; i < 10; i++) childTrie[i] = nullptr;
 	}
 	~Trie() {
 		for (int i = 0; i < 10; i++) {
-			if (next[i]) delete next[i];
+			if (childTrie[i]) delete childTrie[i];
 		}
 	}
-	void insert(const char* key) {
-		if (*key == '\0') sen_end = true;
+
+	void insert(char* word) {
+		if (*word == '\0') isWord = true;
 		else {
-			int curr = *key - '0';
-			if (next[curr] == NULL) next[curr] = new Trie;
-			next[curr]->insert(key + 1);
+			int next = *word - '0';
+			if (!childTrie[next]) childTrie[next] = new Trie;
+			existChild = true;
+			childTrie[next]->insert(word + 1);
 		}
-	}
-	bool find(const char* key) {
-		if (*key == '\0') return 0;
-		if (sen_end) return 1;
-		int curr = *key - '0';
-		return next[curr]->find(key + 1);
+		if (isWord && existChild) isConsistent = false;
 	}
 };
-int tk, n, res;
-char str[10001][11];
 int main(void) {
-	scanf("%d", &tk);
-	while (tk--) {
-		scanf("%d", &n);
-		getchar();
-		res = 0;
-		Trie* root = new Trie;
-		for (int i = 0; i < n; i++) {
-			scanf("%s", str[i]);
+	int T;
+	cin >> T;
+	for (int i = 0; i < T; i++) {
+		isConsistent = true;
+		Trie* trie = new Trie;
+		int N;
+		cin >> N;
+		for (int j = 0; j < N; j++) {
+			char word[11];
+			cin >> word;
+			trie->insert(word);
 		}
-		for (int i = 0; i < n; i++) root->insert(str[i]);
-		for (int i = 0; i < n; i++) {
-			if (root->find(str[i])) res = 1;
-		}
-		if (res) printf("NO\n");
-		else printf("YES\n");
+		if (isConsistent) cout << "YES\n";
+		else cout << "NO\n";
+		delete trie;
 	}
 }
