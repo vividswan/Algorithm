@@ -1,54 +1,52 @@
 #include <iostream>
-#include <algorithm>
 using namespace std;
 struct Trie {
-	Trie* next[26];
-	bool finish;
+	bool isWord;
+	Trie* childTrie[26];
 	Trie() {
-		fill(next, next + 26, nullptr);
-		finish = false;
+		isWord = false;
+		for (int i = 0; i < 26; i++)childTrie[i] = nullptr;
 	}
 	~Trie() {
 		for (int i = 0; i < 26; i++) {
-			if (next[i]) delete next[i];
+			if (childTrie[i]) delete childTrie[i];
 		}
 	}
-	void insert(const char* key) {
-		if (*key == '\0') {
-			finish = true;
+	void insert(char* word) {
+		if (*word == '\0') isWord = true;
+		else {
+			int next = *word - 'a';
+			if (!childTrie[next]) childTrie[next] = new Trie();
+			childTrie[next]->insert(word + 1);
+		}
+	}
+	bool find(char* word) {
+		if (*word == '\0') {
+			if (isWord) return true;
+			else return false;
 		}
 		else {
-			int curr = *key - 'a';
-			if (next[curr] == NULL) next[curr] = new Trie;
-			next[curr]->insert(key + 1);
+			int next = *word - 'a';
+			if (!childTrie[next]) return false;
+			return childTrie[next]->find(word + 1);
 		}
-	}
-	bool find(const char* key) {
-		if (*key == '\0') {
-			if (finish) return true;
-		}
-		int curr = *key - 'a';
-		if (next[curr] == NULL) {
-			return false;
-		}
-		return next[curr]->find(key + 1);
 	}
 };
 int main(void) {
-	int n, m;
-	scanf("%d %d", &n, &m);
-	getchar();
-	Trie* root = new Trie;
-	for (int i = 0; i < n; i++) {
-		char str[501];
-		scanf("%s", str);
-		root->insert(str);
+	int N, M, result = 0;
+	cin >> N >> M;
+	Trie* trie = new Trie();
+	for (int i = 0; i < N; i++) {
+		char word[501];
+		cin >> word;
+		trie->insert(word);
 	}
-	int cnt = 0;
-	for (int i = 0; i < m; i++) {
-		char str[501];
-		scanf("%s", str);
-		if (root->find(str)) cnt++;
+
+	for (int i = 0; i < M; i++) {
+		char word[501];
+		cin >> word;
+		if (trie->find(word)) result++;
 	}
-	printf("%d\n", cnt);
+	cout << result << '\n';
+	return 0;
 }
