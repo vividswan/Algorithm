@@ -1,57 +1,61 @@
 #include <iostream>
-#include <cstdio>
-#include <algorithm>
+#include <queue>
+#include <string>
 using namespace std;
-int tot;
-char res[31];
 struct Trie {
-	Trie* next[128];
-	bool finish;
-	int cnt;
+	Trie* childTrie[128];
+	int isWord;
 	Trie() {
-		fill(next, next + 128, nullptr);
-		finish = false;
-		cnt = 0;
+		for (int i = 0; i < 128; i++) childTrie[i] = nullptr;
+		isWord = 0;
 	}
 	~Trie() {
 		for (int i = 0; i < 128; i++) {
-			if (next[i]) delete next[i];
+			if (childTrie[i]) childTrie[i] = NULL;
 		}
 	}
-	void insert(const char* key) {
-		if (*key == '\0') {
-			finish = true;
-			cnt++;
+	void insert(char* word) {
+		if (*word == '\0') {
+			isWord++;
 			return;
 		}
-		int curr = *key - ' ';
-		if (next[curr] == nullptr) {
-			next[curr] = new Trie();
+		int nextNum = *word - ' ';
+		if (childTrie[nextNum] == NULL) {
+			childTrie[nextNum] = new Trie();
 		}
-		next[curr]->insert(key + 1);
+		childTrie[nextNum]->insert(word + 1);
 	}
-	void chk(int de) {
-		if (finish) {
-			res[de] = '\0';
-			printf("%s %.4lf\n", res, ((double)cnt / double(tot)) * 100);
-		}
+};
+void count(Trie* trie, char* word, int N, char* stWord) {
+	if (trie->isWord) {
+		*word = '\0';
+		printf("%s %.4f\n", stWord, (double)100 * trie->isWord / N);
+		return;
+	}
+	else {
 		for (int i = 0; i < 128; i++) {
-			if (next[i]) {
-				res[de] = i + ' ';
-				next[i]->chk(de + 1);
-				res[de] = '\0';
+			if (trie->childTrie[i]) {
+				*word = i + ' ';
+				count(trie->childTrie[i], word + 1, N, stWord);
 			}
 		}
 	}
-};
+}
 int main(void) {
-	Trie* root = new Trie();
+	Trie* trie = new Trie();
+	int N = 0;
 	char str[31];
 	while (scanf(" %[^\n]s", str) != EOF) {
-		root->insert(str);
-		tot++;
+		trie->insert(str);
+		N++;
 	}
-	root->chk(0);
-	delete root;
+	for (int i = 0; i < 128; i++) {
+		if (trie->childTrie[i]) {
+			char word[31];
+			word[0] = i + ' ';
+			count(trie->childTrie[i], word + 1, N, word);
+		}
+	}
+	delete trie;
 	return 0;
 }
