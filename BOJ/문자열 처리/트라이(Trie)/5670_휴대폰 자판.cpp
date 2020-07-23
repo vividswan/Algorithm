@@ -1,65 +1,54 @@
 #include <iostream>
 using namespace std;
-char str[100000][81];
-bool st;
-int res, n;
 struct Trie {
-	Trie* next[26];
-	bool finish;
-	int cnt;
+	Trie* childTrie[26];
+	bool isWord;
+	int childCnt;
 	Trie() {
-		finish = false;
-		cnt = 0;
-		for (int i = 0; i < 26; i++) next[i] = nullptr;
+		for (int i = 0; i < 26; i++) childTrie[i] = nullptr;
+		isWord = false;
+		childCnt = 0;
 	}
 	~Trie() {
 		for (int i = 0; i < 26; i++) {
-			if (next[i]) delete next[i];
+			if (childTrie[i]) delete childTrie[i];
 		}
 	}
-	void insert(char* key) {
-		if (*key == '\0') {
-			finish = true;
+	void insert(char* word) {
+		if (*word == '\0') {
+			isWord = true;
 			return;
 		}
-		else {
-			int curr = *key - 'a';
-			if (next[curr] == nullptr) {
-				cnt++;
-				next[curr] = new Trie();
-			}
-			next[curr]->insert(key + 1);
+		int nextNum = *word - 'a';
+		if (childTrie[nextNum] == NULL) {
+			childTrie[nextNum] = new Trie();
+			childCnt++;
 		}
+		childTrie[nextNum]->insert(word + 1);
 	}
-	void find(char* key) {
-		if (*key == '\0') return;
-		if (st) {
-			st = false;
-			res++;
-		}
-		else {
-			if (finish) res++;
-			else if (cnt > 1) res++;
-		}
-		int curr = *key - 'a';
-		next[curr]->find(key + 1);
+	int check(char* word, int cnt) {
+		if (*word == '\0') return cnt;
+		if (childCnt > 1 || isWord) cnt++;
+		int nextNum = *word - 'a';
+		return childTrie[nextNum]->check(word + 1, cnt);
 	}
 };
+int N;
+char word[100001][81];
 int main(void) {
-	while (scanf("%d", &n) != -1) {
-		res = 0;
-		getchar();
-		Trie* root = new Trie();
-		for (int i = 0; i < n; i++) {
-			scanf("%s", str[i]);
-			root->insert(str[i]);
+	while (scanf("%d", &N) != EOF) {
+		Trie* trie = new Trie();
+		for (int i = 0; i < N; i++) {
+			scanf("%s", word[i]);
+			trie->insert(word[i]);
 		}
-		for (int i = 0; i < n; i++) {
-			st = true;
-			root->find(str[i]);
+		int result = 0;
+		if (trie->childCnt == 1) result += N;
+		for (int i = 0; i < N; i++) {
+			result += trie->check(word[i], 0);
 		}
-		printf("%.2lf\n", (double)res / (double)n);
-		delete root;
+		printf("%.2f\n", (double)result / N);
+		delete trie;
 	}
 	return 0;
 }
