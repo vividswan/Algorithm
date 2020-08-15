@@ -1,15 +1,19 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
 using namespace std;
 int main(void) {
+	int arr[101];
 	int N;
 	cin >> N;
-	vector<int> adj(N);
+	for (int i = 0; i < N; i++) cin >> arr[i];
 	for (int i = 0; i < N; i++) {
-		cin >> adj[i];
+		int idx = i;
+		for (int j = i + 1; j < N; j++) {
+			if (arr[j] < arr[idx]) idx = j;
+		}
+		int tmp = arr[i];
+		arr[i] = arr[idx];
+		arr[idx] = tmp;
 	}
-	sort(adj.begin(), adj.end());
-	for (int i = 0; i < N; i++) cout << adj[i] << ' ';
-	return 0;
+	for (int i = 0; i < N; i++) cout << arr[i] << ' ';
+	cout << 'endl';
 }
