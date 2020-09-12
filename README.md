@@ -50,4 +50,5 @@
 >    - 재귀(Recursion)
 >    - 최장 증가 수열(LIS)
 >    - 백트래킹(Backtracking)
-
+>
+> - 비트마스킹(Bit Masking)
