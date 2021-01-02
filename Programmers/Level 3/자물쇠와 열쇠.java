@@ -12,8 +12,8 @@ class Solution {
     }
 
     public static int[][] rotMap(int[][] map){
-        int[][] returnMap = new int[map.length][map.length];
         int mapSize = map.length;
+        int[][] returnMap = new int[mapSize][mapSize];
         for(int i=0;i<mapSize;i++){
             for(int j=0;j<mapSize;j++){
                 returnMap[i][j] = map[mapSize-j-1][i];
