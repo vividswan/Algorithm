@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.StringTokenizer;
 
-public class 럭키 스트레이트 {
+public class 18406_럭키 스트레이트 {
 
     public static boolean chkFunc(String str){
         int tot1 = 0;
