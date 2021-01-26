@@ -42,8 +42,6 @@ public class 1573_최단경로 {
             int index = node.getIndex();
             int dist = node.getDist();
 
-            if(distTable[index]<dist) continue;;
-
             for(int i=0;i<adj.get(index).size();i++){
                 int next = adj.get(index).get(i).getIndex();
                 int cost = distTable[index] + adj.get(index).get(i).getDist();
