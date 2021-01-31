@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.StringTokenizer;
 
-public class 집합의 표현{
+public class 1717_집합의 표현{
     public static int n,m;
     public static int[] parent;
 
