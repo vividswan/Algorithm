@@ -1,60 +1,67 @@
+import java.io.*;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 
-class Pair<T>{
-    private T first;
-    private  T second;
-    Pair(T first, T second){
-        this.first = first;
-        this.second = second;
+class Node{
+    private int x;
+    private int y;
+    public Node(int  x, int y){
+        this.x = x;
+        this.y = y;
     }
-    public T first(){
-        return first;
+
+    public int getX() {
+        return x;
     }
-    public T second(){
-        return second;
+
+    public int getY() {
+        return y;
     }
 }
 
 public class 미로 탈출 {
+    public static int n,m;
+    public static int[][] map;
+    public static int[][] vis;
+    public static int[] dx = {0,0,-1,1};
+    public static int[] dy = {1,-1,0,0};
+    public static Queue<Node> q = new LinkedList<>();
 
-    public static int dx[] = {1,-1,0,0};
-    public static int dy[] = {0,0,1,-1};
-    public static int map[][] = new int[201][201];
-    public static int vis[][] = new int[201][201];
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int n, m;
-        n = scanner.nextInt();
-        m = scanner.nextInt();
-        scanner.nextLine();
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
 
-        for(int i=0;i<n;i++){
-            String str = scanner.nextLine();
-            for(int j=0;j<m;j++){
-                map[i][j] = str.charAt(j) - '0';
+        map = new int[n+1][m+1];
+        vis = new int[n+1][m+1];
+        for(int i=1;i<=n;i++){
+            st = new StringTokenizer(br.readLine());
+            String str = st.nextToken();
+            for(int j=1; j<=m; j++){
+                map[i][j] = str.charAt(j-1) - '0';
+                vis[i][j] = -1;
             }
         }
-
-        Queue<Pair<Integer>> q = new LinkedList<>();
-        q.offer(new Pair<Integer>(0,0));
-        vis[0][0] = 1;
+        vis[1][1] = 1;
+        q.offer(new Node(1,1));
         while(!q.isEmpty()){
-            Pair<Integer> pair = q.poll();
-            int x = pair.first();
-            int y = pair.second();
-            for(int i=0;i<4;i++){
-                int nx = x + dx[i];
-                int ny = y + dy[i];
-                if(nx<0||ny<0||nx>n||ny>m) continue;
-                if(map[nx][ny] == 0) continue;
-                if(vis[nx][ny] != 0) continue;
-                vis[nx][ny] = vis[x][y]+1;
-                q.offer(new Pair<Integer>(nx,ny));
+            Node node = q.poll();
+            for(int i=0; i<4; i++){
+                int nx = node.getX() + dx[i];
+                int ny = node.getY() + dy[i];
+                if(nx<1||ny<1||nx>n||ny>m) continue;
+                if(vis[nx][ny] != -1) continue;
+                vis[nx][ny] = vis[node.getX()][node.getY()]+1;
+                q.offer(new Node(nx,ny));
             }
         }
-        System.out.println(vis[n-1][m-1]);
+        bw.write(String.valueOf(vis[n][m])+"\n");
+        bw.flush();
+        br.close();
+        bw.close();
     }
 }
