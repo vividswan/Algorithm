@@ -1,40 +1,47 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.io.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
-public class 부품 찾기{
-    public static void main(String[] args) {
-        int n,m;
-        Scanner scanner = new Scanner(System.in);
-        n = scanner.nextInt();
-        List<Integer> value = new ArrayList<>();
-        for(int i=0;i<n;i++){
-            Integer now = scanner.nextInt();
-            value.add(now);
+public class 부품 찾기 {
+    public static int[] arr;
+    public static int[] search;
+    public static int n, m;
+    public static boolean isExist(int val){
+        int st = 0;
+        int ed = n-1;
+        while(st<=ed){
+            int mid = (st+ed)/2;
+            if(arr[mid]==val) return true;
+            else if(mid<val) st = mid+1;
+            else ed = mid-1;
         }
-        Collections.sort(value);
-        m = scanner.nextInt();
-        for(int i=0;i<m;i++){
-            Integer now = scanner.nextInt();
-            int le = 0, ri =n-1;
-            String ans = "no ";
-            while(le <= ri){
-                int mid = (le+ri)/2;
-                if(value.get(mid) == now){
-                    ans="yes ";
-                    break;
-                }
-                else if(value.get(mid)>now){
-                    ri = mid-1;
-                    continue;
-                }
-                else {
-                    le = mid+1;
-                }
-            }
-            System.out.print(ans);
+        return false;
+    }
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        n = Integer.parseInt(st.nextToken());
+        arr = new int[n];
+        st = new StringTokenizer(br.readLine());
+        for(int i=0; i<n; i++){
+            arr[i] = Integer.parseInt(st.nextToken());
         }
-        System.out.println();
+        st = new StringTokenizer(br.readLine());
+        m = Integer.parseInt(st.nextToken());
+        search = new int[m];
+        st = new StringTokenizer(br.readLine());
+        for(int i=0; i<m; i++){
+            search[i] = Integer.parseInt(st.nextToken());
+        }
+        Arrays.sort(arr);
+        for(int i=0; i<m; i++){
+            if(isExist(search[i])) bw.write("yes ");
+            else bw.write("no ");
+        }
+        bw.flush();
+        br.close();
+        bw.close();
     }
 }
