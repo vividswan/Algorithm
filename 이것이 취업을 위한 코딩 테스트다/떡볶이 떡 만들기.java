@@ -1,41 +1,51 @@
+import java.io.*;
 import java.util.Arrays;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 
-public class 떡볶이 떡 만들기{
-    public static Long binarySearch(Long value){
-        Long result = 0L;
-        while(minn <= maxx){
-            Long mid = (minn+maxx)/2L;
-            Long sum = 0L;
-            for(int i=0;i<n;i++){
-                if(mid>=arr[i])  continue;
-                sum += arr[i]-mid;
-            }
-            if(sum>=value) {
-                result = minn;
-                minn = mid+1;
-            }
-            else maxx = mid-1;
+public class 떡볶이 떡 만들기 {
+
+    public static int n,m;
+    public static int[] arr;
+    public static int cutFunc(int val){
+        int res = 0;
+        for(int i=0; i<n; i++){
+            if(arr[i]>val) res+= arr[i]-val;
         }
-        return result;
+        return res;
     }
 
-    public static int n;
-    public static Long m, minn, maxx=0L;
-    public static Long[] arr;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        n = scanner.nextInt();
-        m = scanner.nextLong();
-        arr = new Long[n];
-        minn = 2000000000L;
-        for(int i=0;i<n;i++){
-            arr[i]=scanner.nextLong();
-            maxx = Math.max(maxx,arr[i]);
-            minn = Math.min(minn,arr[i]);
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
+
+        arr = new int[n];
+        st = new StringTokenizer(br.readLine());
+        for(int i=0; i<n; i++){
+            arr[i] = Integer.parseInt(st.nextToken());
         }
+
         Arrays.sort(arr);
-        System.out.println(binarySearch(m));
+        int le = 0;
+        int ri = arr[n-1];
+        int res = 0;
+        while(le<=ri){
+            int mid = (le+ri)/2;
+            int val = cutFunc(mid);
+            if(val>=m) {
+                res = mid;
+                le = mid+1;
+            }
+            else {
+                ri = mid-1;
+            }
+        }
+        bw.write(String.valueOf(res));
+        bw.flush();
+        br.close();
+        bw.close();
     }
 }
