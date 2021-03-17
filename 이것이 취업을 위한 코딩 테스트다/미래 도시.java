@@ -1,45 +1,60 @@
-import java.util.Scanner;
+import java.io.*;
+import java.util.StringTokenizer;
 
-public class Main {
+public class 미래 도시 {
 
-    public static final int INF = (int) 1e9;
+    public static int n,m;
+    public static int[][] dist;
+    public static final int INF = (int)1e9;
 
-    public static int n,m,x,k;
-    public static int map[][];
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-    public static void 미래 도시(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        n = scanner.nextInt();
-        m = scanner.nextInt();
-        map = new int[n+1][n+1];
+        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        for(int i=1;i<=n;i++){
-            for(int j=1; j<=n;j++){
-                if(i==j) map[i][j]=0;
-                else map[i][j]=INF;
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
+        dist = new int[n+1][n+1];
+        for(int i=1; i<=n; i++){
+            for(int j=1; j<=n; j++){
+                if(i!=j) dist[i][j] = INF;
             }
         }
-        for(int i=1;i<=m;i++){
+
+        for(int i=1; i<=m; i++){
+            st = new StringTokenizer(br.readLine());
             int x,y;
-            x=scanner.nextInt();
-            y=scanner.nextInt();
-            map[x][y]=1;
-            map[y][x]=1;
+            x = Integer.parseInt(st.nextToken());
+            y = Integer.parseInt(st.nextToken());
+
+            dist[x][y] = 1;
+            dist[y][x] = 1;
         }
 
-        x=scanner.nextInt();
-        k=scanner.nextInt();
-
-        for(int t=1;t<=n;t++){
-            for(int i=1;i<=n;i++){
-                for(int j=1;j<=n;j++){
-                    int cost = map[i][t]+map[t][j];
-                    if(cost<map[i][j]) map[i][j] = cost;
+        for(int k=1; k<=n; k++){
+            for(int i=1; i<=n; i++){
+                for(int j=1; j<=n; j++){
+                    dist[i][j] = Math.min(dist[i][k]+dist[k][j],dist[i][j]);
                 }
             }
         }
 
-        if(map[1][k]!=INF && map[k][x] != INF) System.out.println(map[1][k]+map[k][x]);
-        else System.out.println(-1);
+        st = new StringTokenizer(br.readLine());
+        int x,k;
+        x = Integer.parseInt(st.nextToken());
+        k = Integer.parseInt(st.nextToken());
+        int res = 0;
+
+        if(dist[1][k]==INF || dist[k][x] ==INF) res=-1;
+        else{
+            res = dist[1][k] + dist[k][x];
+        }
+
+        bw.write(String.valueOf(res)+"\n");
+        bw.flush();
+        br.close();
+        bw.close();
+
     }
 }
