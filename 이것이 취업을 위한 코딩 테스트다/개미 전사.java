@@ -1,26 +1,28 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.io.*;
+import java.util.StringTokenizer;
 
-public class 개미 전사{
+public class 개미전사 {
 
     public static int n;
+    public static int[] arr;
+    public static int[] dp;
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        n = scanner.nextInt();
-        List<Integer> list = new ArrayList<>();
-        for(int i=0;i<n;i++){
-            int num = scanner.nextInt();
-            list.add(num);
-        }
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-        int[][] dp = new int[101][2];
-        dp[0][1]=list.get(0);
-        for(int i=1;i<n;i++){
-            dp[i][0] = Math.max(dp[i-1][0],dp[i-1][1]);
-            dp[i][1] = dp[i-1][0]+list.get(i);
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        n = Integer.parseInt(st.nextToken());
+        arr = new int[n+1];
+        dp = new int[n+1];
+        st = new StringTokenizer(br.readLine());
+        for(int i=1; i<=n; i++){
+            arr[i]=Integer.parseInt(st.nextToken());
+            if(i>1) dp[i] = Math.max(dp[i-1],dp[i-2]+arr[i]);
         }
-        System.out.println(Math.max(dp[n-1][0],dp[n-1][1]));
+        bw.write(String.valueOf(dp[n]));
+        bw.flush();
+        br.close();
+        bw.close();
     }
 }
