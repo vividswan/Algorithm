@@ -4,61 +4,66 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
-public class 커리큘럼 {
+public class Main {
 
-    public static ArrayList<ArrayList<Integer>> outDegree = new ArrayList<ArrayList<Integer>>();
-    public static int[] inDegreeCnt;
+    public static int n;
+    public static int[] inDegree;
     public static int[] value;
-    public static int[] result;
+    public static int[] res;
+    public static ArrayList<ArrayList<Integer>> outDegree = new ArrayList<ArrayList<Integer>>();
+    public static void topologySorting(){
+        Queue<Integer> q = new LinkedList<Integer>();
+        for(int i=1; i<=n; i++) {
+            if(inDegree[i]==0) {
+                res[i]=value[i];
+                q.add(i);
+            }
+        }
+        while(!q.isEmpty()){
+            int now = q.poll();
+            for(int i=0; i<outDegree.get(now).size();i++){
+                int next = outDegree.get(now).get(i);
+                inDegree[next]--;
+                res[next] = Math.max(res[next],res[now]);
+                if(inDegree[next]==0) {
+                    q.add(next);
+                    res[next]+=value[next];
+                }
+            }
+        }
+    }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-        int n;
         StringTokenizer st = new StringTokenizer(br.readLine());
         n = Integer.parseInt(st.nextToken());
-        for(int i=0;i<=n;i++) outDegree.add(new ArrayList<Integer>());
-        inDegreeCnt = new int[n+1];
-        value = new int[n+1];
-        result = new int[n+1];
 
-        for(int i=1;i<=n;i++){
+        inDegree = new int[n+1];
+        value  = new int[n+1];
+        res  = new int[n+1];
+        for(int i=0; i<=n; i++) outDegree.add(new ArrayList<>());
+
+        for(int i=1; i<=n; i++){
             st = new StringTokenizer(br.readLine());
-            int val = Integer.parseInt(st.nextToken());
-            value[i] = val;
+            value[i] = Integer.parseInt(st.nextToken());
             while(true){
-                int cnt = Integer.parseInt(st.nextToken());
-                if(cnt == -1) break;
-                outDegree.get(cnt).add(i);
-                inDegreeCnt[i]++;
+                int idx = Integer.parseInt(st.nextToken());
+                if(idx==-1) break;
+                inDegree[i]++;
+                outDegree.get(idx).add(i);
             }
         }
 
-        Queue<Integer> q = new LinkedList<>();
-        for(int i=1;i<=n;i++){
-            if(inDegreeCnt[i]==0) {
-                q.offer(i);
-                result[i]=value[i];
-            }
-        }
-        while(!q.isEmpty()){
-            int now = q.poll();
-            for(int i=0;i<outDegree.get(now).size();i++){
-                int out = outDegree.get(now).get(i);
-                inDegreeCnt[out]--;
-                result[out] = Math.max(result[out],result[now]);
-                if(inDegreeCnt[out]==0){
-                    q.offer(out);
-                    result[out] += value[out];
-                }
-            }
-        }
-        for(int i=1;i<=n;i++){
-            bw.write(String.valueOf(result[i])+"\n");
+        topologySorting();
+
+        for(int i=1; i<=n; i++){
+            bw.write(String.valueOf(res[i])+"\n");
         }
         bw.flush();
         br.close();
         bw.close();
+
     }
 }
