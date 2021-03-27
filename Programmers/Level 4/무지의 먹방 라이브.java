@@ -1,66 +1,67 @@
-import java.util.*;
+import java.util.Arrays;
+import java.util.PriorityQueue;
 
-class Pair implements Comparable<Pair>{
-    private int idx;
-    private long val;
+class Node implements Comparable<Node>{
+    private  int val;
+    private  int idx;
 
-    public Pair(int idx, long  val){
-        this.idx = idx;
+    public Node(int val, int idx){
         this.val = val;
+        this.idx = idx;
     }
 
     public int getIdx() {
         return idx;
     }
 
-    public long getVal() {
+    public int getVal() {
         return val;
     }
 
     @Override
-    public int compareTo(Pair other) {
-        return Long.compare(this.val, other.val);
+    public int compareTo(Node other) {
+        return Integer.compare(this.val, other.val);
     }
 }
 
 class Solution {
+
     public int solution(int[] food_times, long k) {
 
-        long tot = 0;
-        for(int i=0;i<food_times.length;i++){
-            tot += food_times[i];
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        long sum = 0;
+
+        for (int i = 0; i < food_times.length; i++) {
+            pq.offer(new Node(food_times[i], i + 1));
+            sum += food_times[i];
         }
 
-        if(tot<=k) return -1;
+        if (sum <= k) return -1;
+        sum = 0;
+        long foodLength = pq.size();
+        long bef = 0;
+        long now = 0;
 
-        PriorityQueue<Pair> pq = new PriorityQueue<>();
-        for(int i=0;i<food_times.length;i++){
-            pq.offer(new Pair(i+1, (long)food_times[i]));
+
+        while (sum + (pq.peek().getVal() - bef) * foodLength <= k) {
+            Node node = pq.poll();
+            now = node.getVal();
+            sum += (now - bef) * foodLength;
+            foodLength--;
+            bef = now;
         }
 
-        long befTot = 0;
-        long befVal = 0;
-        long cnt =food_times.length;
-
-        while(befTot+((pq.peek().getVal()-befVal)*cnt) <= k){
-            Pair pair = pq.poll();
-            befTot += (pair.getVal()-befVal) * cnt;
-            cnt--;
-            befVal = pair.getVal();
-        }
-
-
-        List<Integer> list = new ArrayList<>();
-
+        k -= sum;
+        int[] arr = new int[pq.size()];
+        int cnt = 0;
         while(!pq.isEmpty()){
-            Pair pair = pq.poll();
-            int idx = pair.getIdx();
-            list.add(idx);
+            int idx = pq.poll().getIdx();
+            arr[cnt]  = idx;
+            cnt++;
         }
+        Arrays.sort(arr);
 
-        Collections.sort(list);
+        return arr[(int)(k%cnt)];
 
-        int answer = list.get((int) ((k-befTot) % cnt));
-        return answer;
     }
 }
