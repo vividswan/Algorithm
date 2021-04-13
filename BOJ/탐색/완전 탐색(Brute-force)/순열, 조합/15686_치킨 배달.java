@@ -2,39 +2,13 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-class Combi{
-    private int n;
-    private int m;
-    public Combi(int n, int m){
-        this.n = n;
-        this.m = m;
-    }
-
-    public ArrayList<ArrayList<Integer>> getResult(){
-        return result;
-    }
-
-    ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
-
-    public void getCombi(int arr[], int depth, int idx, int target){
-        if(m==depth){
-            ArrayList<Integer> temp = new ArrayList<>();
-            for(int i=0;i<m;i++){
-                temp.add(arr[i]);
-            }
-            result.add(temp);
-        }
-        if(target==n) return;
-        arr[idx] = target;
-        getCombi(arr,depth+1,idx+1,target+1);
-        getCombi(arr,depth,idx,target+1);
-    }
-
-}
-
-class Position{
+class Node{
     private int x;
     private int y;
+    public Node(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
 
     public int getX() {
         return x;
@@ -43,67 +17,81 @@ class Position{
     public int getY() {
         return y;
     }
-
-    public  Position(int x, int y){
-        this.x = x;
-        this.y = y;
-    }
 }
 
 public class 15686_치킨 배달 {
-    public static int[][] map;
+
     public static int n;
     public static int m;
-    public static int ans = (int) 1e9;
+    public static int[] [] map;
+    public static ArrayList<Node> chicken = new ArrayList<>();
+    public static ArrayList<Node> house = new ArrayList<>();
+    public static ArrayList<ArrayList<Integer>> combs = new ArrayList<ArrayList<Integer>>();
+    public static boolean[] chk;
 
-    public static ArrayList<Position> house = new ArrayList<>();
-    public static ArrayList<Position> store = new ArrayList<>();
-
-    public static int getDist(Position a, Position b){
-        return Math.abs(a.getX()-b.getX()) + Math.abs(a.getY()-b.getY());
+    public static int getDis(Node a, Node b){
+        int result = 0;
+        result+= Math.abs(a.getX() - b.getX());
+        result+= Math.abs(a.getY() - b.getY());
+        return  result;
     }
 
-    public static int getValue(ArrayList<Integer> arr){
-        int total = 0;
-        for(int i=0;i<house.size();i++){
-            Position nowHouse = house.get(i);
-            int nowVal = (int) 1e9;
-            for(int j=0;j<arr.size();j++){
-                Position now = store.get(arr.get(j));
-                nowVal = Math.min(nowVal,getDist(now,nowHouse));
+
+    public static void recursion(int idx, int cnt){
+        if(cnt == m){
+            ArrayList<Integer> arr = new ArrayList<>();
+            for(int i=0; i<chk.length; i++){
+                if(chk[i]) arr.add(i);
             }
-            total += nowVal;
+            combs.add(arr);
+            return;
         }
-        return total;
+
+        for(int i = idx; i<chk.length; i++){
+            if(chk[i]) continue;
+            chk[i] = true;
+            recursion(i,cnt+1);
+            chk[i] = false;
+        }
+
     }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-
-
         StringTokenizer st = new StringTokenizer(br.readLine());
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
         map = new int[n+1][n+1];
-        for(int i=1;i<=n;i++){
+
+        for(int i=1; i<=n; i++){
             st = new StringTokenizer(br.readLine());
-            for(int j=1;j<=n;j++){
+            for(int j=1; j<=n; j++){
                 map[i][j] = Integer.parseInt(st.nextToken());
-                if(map[i][j]==1) house.add(new Position(i,j));
-                if(map[i][j]==2) store.add(new Position(i,j));
+                if(map[i][j]==1) house.add(new Node(i,j));
+                else if(map[i][j]==2) chicken.add(new Node(i,j));
             }
         }
-
-        Combi combi = new Combi(store.size(),m);
-        combi.getCombi(new int[store.size()],0,0,0);
-        ArrayList<ArrayList<Integer>> combiArr = combi.getResult();
-        for(int i=0;i<combiArr.size();i++){
-            ArrayList<Integer> now = combiArr.get(i);
-            ans = Math.min(ans,getValue(now));
+        chk = new boolean[chicken.size()];
+        recursion(0,0);
+        int res = (int)1e9;
+        for(int i =0; i<combs.size();i++){
+            int value = 0;
+            for(int j=0; j<house.size();j++){
+                Node houseNode = house.get(j);
+                int temp = 0;
+                for(int k=0;k<combs.get(i).size();k++){
+                    Node chickenNode = chicken.get(combs.get(i).get(k));
+                    int dist = getDis(houseNode, chickenNode);
+                    if(k==0) temp = dist;
+                    else temp = Math.min(dist,temp);
+                }
+                value += temp;
+            }
+            res = Math.min(res,value);
         }
-        bw.write(String.valueOf(ans));
+        bw.write(String.valueOf(res)+"\n");
         bw.flush();
         br.close();
         bw.close();
