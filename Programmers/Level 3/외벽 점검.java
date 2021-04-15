@@ -1,78 +1,73 @@
 import java.util.ArrayList;
-
-class Permutation{
-    private int n;
-    private int m;
-    private int[] now;
-    private ArrayList<ArrayList<Integer>> result;
-
-    public Permutation(int n, int m){
-        this.n = n;
-        this.m = m;
-        this.now = new int[m];
-        this.result = new ArrayList<ArrayList<Integer>>();
-    }
-
-    public ArrayList<ArrayList<Integer>> getResult(){
-        return result;
-    }
-
-    public void swap(int[] arr, int i, int j){
-        int temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-    }
-
-    public void getPermutation(int[] arr,int depth){
-        if(depth==m){
-            ArrayList<Integer> temp = new ArrayList<>();
-            for(int i=0;i<now.length;i++){
-                temp.add(now[i]);
-            }
-            result.add(temp);
-            return;
-        }
-        else {
-            for(int i=depth;i<n;i++){
-                swap(arr,depth,i);
-                now[depth] = arr[depth];
-                getPermutation(arr,depth+1);
-                swap(arr,depth,i);
-            }
-        }
-    }
-
-}
+import java.util.Collections;
 
 class Solution {
-    public int solution(int n, int[] weak, int[] dist) {
-        ArrayList<Integer> circleList = new ArrayList<>();
-        for(int i=0;i<weak.length;i++){
-            circleList.add(weak[i]);
-        }
-        for(int i=0;i<weak.length;i++){
-            circleList.add(weak[i]+n);
-        }
-        int ans = dist.length+1;
-        Permutation permutation = new Permutation(dist.length, dist.length);
-        permutation.getPermutation(dist ,0);
-        ArrayList<ArrayList<Integer>> perList = permutation.getResult();
 
-        for(int i=0;i<weak.length;i++){
-            for(int j=0;j<perList.size();j++){
-                int cnt = 0;
-                int position = circleList.get(i) + perList.get(j).get(cnt);
-                for(int k=i;k<i+weak.length;k++){
-                    if(position < circleList.get(k)){
-                        cnt+=1;
-                        if(cnt >= dist.length) break;
-                        position = circleList.get(k) + perList.get(j).get(cnt);
-                    }
-                }
-                ans = Math.min(ans,cnt+1);
+    public static ArrayList<ArrayList<Integer>> permuList = new ArrayList<ArrayList<Integer>>();
+    public static ArrayList<Integer> nowPermu = new ArrayList<>();
+    public static ArrayList<Integer> weakLocations = new ArrayList<>();
+    public static ArrayList<Integer>distList = new ArrayList<>();
+    public static boolean[] chk;
+    public static int weakSize;
+    public static int distSize;
+
+    public static void recursion(int cnt){
+        if(cnt == distSize){
+            ArrayList<Integer> temp = new ArrayList<>(nowPermu);
+            permuList.add(temp);
+            return;
+        }
+        for(int i=0; i<distSize;i++){
+            if(!chk[i]){
+                chk[i] = true;
+                nowPermu.add(distList.get(i));
+                recursion(cnt+1);
+                nowPermu.remove(nowPermu.size()-1);
+                chk[i] = false;
             }
         }
-        if(ans>dist.length) ans = -1;
-        return  ans;
+    }
+
+    public int solution(int n, int[] weak, int[] dist) {
+
+        weakSize = weak.length;
+        distSize = dist.length;
+        chk = new boolean[distSize];
+        int answer = dist.length+1;
+
+        for(int i=0; i<dist.length; i++){
+            distList.add(dist[i]);
+        }
+
+        for(int i=0; i<weakSize; i++){
+            weakLocations.add(weak[i]);
+            weakLocations.add(weak[i] + n);
+        }
+
+        Collections.sort(weakLocations);
+
+        recursion(0);
+
+        for(int i=0; i<weakSize;i++){
+            for(int j=0; j<permuList.size();j++){
+                ArrayList<Integer> permu = permuList.get(j);
+                int cnt = 1;
+                boolean isCorrect = true;
+                int nowDist = weakLocations.get(i) + permu.get(0);
+                for(int idx=i;idx<i+weakSize; idx++){
+                    if (nowDist < weakLocations.get(idx)){
+                        cnt++;
+                        if(cnt > permu.size()){
+                            isCorrect = false;
+                            break;
+                        }
+                        nowDist = weakLocations.get(idx) + permu.get(cnt-1);
+                    }
+                }
+                if(isCorrect) answer = Math.min(answer,cnt);
+            }
+        }
+        if(answer == dist.length+1) return -1;
+        else return answer;
     }
 }
