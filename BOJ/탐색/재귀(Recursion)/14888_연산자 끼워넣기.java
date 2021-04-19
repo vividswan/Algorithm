@@ -1,72 +1,53 @@
 import java.io.*;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-public  class 14888_연산자 끼워넣기 {
+public class Main {
 
     public static int n;
-    public static ArrayList<Integer> arr;
-    public static int[] op;
-    public static int maxNum = -1000000001;
-    public static int minNum = 1000000001;
-    public static void dfs(int idx, int value){
-        if(idx==n){
-            maxNum = Math.max(maxNum,value);
-            minNum = Math.min(minNum,value);
+    public static int[] values;
+    public static int[] arr = new int[4];
+    public static int maxValue = -(int)1e9;
+    public static int minValue = +(int)1e9;
+    public static void recursion(int value, int cnt){
+        if(cnt == n+1){
+            maxValue = Math.max(maxValue,value);
+            minValue = Math.min(minValue,value);
             return;
         }
-
-        if(op[0]>0){
-            op[0]--;
-            dfs(idx+1,value+arr.get(idx));
-            op[0]++;
+        for(int i=0; i<4; i++){
+            if(arr[i]>0){
+                arr[i]--;
+                if(i==0) recursion(value+values[cnt],cnt+1);
+                else if(i==1) recursion(value-values[cnt],cnt+1);
+                else if(i==2) recursion(value*values[cnt],cnt+1);
+                else recursion(value/values[cnt],cnt+1);
+                arr[i]++;
+            }
         }
-        if(op[1]>0){
-            op[1]--;
-            dfs(idx+1,value-arr.get(idx));
-            op[1]++;
-        }
-        if(op[2]>0){
-            op[2]--;
-            dfs(idx+1,value*arr.get(idx));
-            op[2]++;
-        }
-        if(op[3]>0){
-            op[3]--;
-            dfs(idx+1,value/arr.get(idx));
-            op[3]++;
-        }
-
-
     }
 
     public static void main(String[] args) throws IOException {
-        arr = new ArrayList<>();
-        op = new int[4];
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         StringTokenizer st = new StringTokenizer(br.readLine());
         n = Integer.parseInt(st.nextToken());
+        values = new int[n+1];
         st = new StringTokenizer(br.readLine());
-        for(int i=0;i<n;i++){
-            int num = Integer.parseInt(st.nextToken());
-            arr.add(num);
+        for(int i=1; i<=n; i++){
+            values[i] = Integer.parseInt(st.nextToken());
+        }
+        st = new StringTokenizer(br.readLine());
+        for(int i=0; i<4; i++){
+            arr[i] = Integer.parseInt(st.nextToken());
         }
 
-        st = new StringTokenizer(br.readLine());
-        for(int i=0;i<4;i++) op[i] = Integer.parseInt(st.nextToken());
+        recursion(values[1], 2);
 
-        dfs(1,arr.get(0));
-
-        bw.write(String.valueOf(maxNum)+"\n");
-        bw.write(String.valueOf(minNum)+"\n");
-
+        bw.write(String.valueOf(maxValue)+"\n");
+        bw.write(String.valueOf(minValue)+"\n");
         bw.flush();
         br.close();
         bw.close();
-
-
     }
-
 }
