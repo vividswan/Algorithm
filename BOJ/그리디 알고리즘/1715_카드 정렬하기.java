@@ -1,38 +1,35 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
-public class 1715_카드 정렬하기 {
-    public static int n, tot;
-    public static PriorityQueue<Integer> pq;
+public class Main {
 
-    public static void main(String[] args) throws Exception{
-        pq = new PriorityQueue<>();
+    public static  int n;
+    public static PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+    public static void main(String[] args) throws IOException {
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        n = Integer.parseInt(st.nextToken());
-
-        for(int i=1; i<=n;i++){
+        n=Integer.parseInt(st.nextToken());
+        for(int i=0; i<n;i++){
             st = new StringTokenizer(br.readLine());
-            int value = Integer.parseInt(st.nextToken());
-            pq.offer(value);
+            pq.offer(Integer.parseInt(st.nextToken()));
         }
 
-        while(pq.size()>=2){
-            int x = pq.poll();
-            int y= pq.poll();
-            tot+= x+y;
-            pq.offer(x+y);
+        int sum = 0;
+
+        while (pq.size()>=2){
+            int num1= pq.poll();
+            int num2= pq.poll();
+            sum+=num1+num2;
+            pq.offer(num1+num2);
         }
 
-        bw.write(String.valueOf(tot));
+        bw.write(String.valueOf(sum)+"\n");
         bw.flush();
         br.close();
         bw.close();
