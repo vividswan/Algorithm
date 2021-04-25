@@ -27,8 +27,6 @@ class Node{
 
 class Solution {
 
-    public static int[] dx = {0,0,1,-1};
-    public static int[] dy = {1,-1,0,0};
     public static int[][][] vis;
     public static int n;
     public static int inf;
