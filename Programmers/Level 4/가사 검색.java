@@ -2,75 +2,73 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 class Solution {
-    public static ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
-    public static ArrayList<ArrayList<String>> reverseList = new ArrayList<ArrayList<String>>();
-    public static ArrayList<Integer> ans;
 
-    public static int leftIdx(ArrayList<String> nowList, String target){
+    public static ArrayList<ArrayList<String>> wordList = new ArrayList<ArrayList<String>>();
+    public static ArrayList<ArrayList<String>> reverseWordList = new ArrayList<ArrayList<String>>();
+    public static int findFunc(String str){
+        int rightValue = 0;
+        int leftValue = 0;
+        if(str.charAt(str.length()-1)=='?'){
+            rightValue = getRightValue(wordList.get(str.length()),str.replaceAll("\\?","z"));
+            leftValue = getLeftValue(wordList.get(str.length()),str.replaceAll("\\?","a"));
+        }
+        else {
+            String reStr = new StringBuffer(str).reverse().toString();
+            rightValue = getRightValue(reverseWordList.get(str.length()),reStr.replaceAll("\\?","z"));
+            leftValue = getLeftValue(reverseWordList.get(str.length()),reStr.replaceAll("\\?","a"));
+        }
+
+        return rightValue - leftValue;
+    }
+    public static int getRightValue(ArrayList<String> list, String str){
         int left = 0;
-        int right = nowList.size();
+        int right = list.size();
         while(left < right){
-            int mid = (right+left)/2;
-            if(nowList.get(mid).compareTo(target)>=0) right = mid;
+            int mid = (left+right)/2;
+            if(list.get(mid).compareTo(str) > 0) right = mid;
             else left = mid+1;
         }
         return right;
     }
 
-    public static int rightIdx(ArrayList<String> nowList, String target){
+    public static int getLeftValue(ArrayList<String> list, String str){
         int left = 0;
-        int right = nowList.size();
-        while (left < right){
-            int mid = (right+left)/2;
-            if(nowList.get(mid).compareTo(target)>0) right = mid;
-            else left = mid + 1;
+        int right = list.size();
+        while(left < right){
+            int mid = (left+right)/2;
+            if(list.get(mid).compareTo(str) >= 0) right = mid;
+            else left = mid+1;
         }
         return right;
     }
 
-
-    public static int getCnt(ArrayList<String> list, String target){
-        String lTaget = target.replaceAll("\\?", "a");
-        String rTaget = target.replaceAll("\\?", "z");
-        int left = leftIdx(list, lTaget);
-        int right = rightIdx(list, rTaget);
-        return right - left;
-    }
-
     public int[] solution(String[] words, String[] queries) {
 
-        for(int i=0;i<=10000;i++){
-            list.add(new ArrayList<String>());
-            reverseList.add(new ArrayList<String>());
+        int[] answer = new int[queries.length];
+
+        for(int i=0; i<= 10000; i++){
+            wordList.add(new ArrayList<>());
+            reverseWordList.add(new ArrayList<>());
         }
 
-        for(int i=0; i< words.length;i++){
-            list.get(words[i].length()).add(words[i]);
-            String reverseString = (new StringBuffer(words[i])).reverse().toString();
-            reverseList.get(words[i].length()).add(reverseString);
+        for(int i=0; i<words.length; i++){
+            String str = words[i];
+            wordList.get(str.length()).add(str);
+            String reverseStr = new StringBuffer(str).reverse().toString();
+            reverseWordList.get(str.length()).add(reverseStr);
         }
 
-        for(int i=0;i<=10000;i++){
-            Collections.sort(list.get(i));
-            Collections.sort(reverseList.get(i));
+        for(int i=1; i<=10000; i++){
+            Collections.sort(wordList.get(i));
+            Collections.sort(reverseWordList.get(i));
         }
-
-        ans = new ArrayList<>();
 
         for(int i=0; i<queries.length;i++){
-            int cnt ;
-            String word = queries[i];
-            if(queries[i].charAt(0)!='?') cnt = getCnt(list.get(word.length()),word);
-            else cnt = getCnt(reverseList.get(word.length()), (new StringBuffer(word)).reverse().toString());
-            ans.add(cnt);
+            answer[i] = findFunc(queries[i]);
         }
 
 
-
-        int[] answer = new int[ans.size()];
-        for(int i=0; i< ans.size();i++){
-            answer[i]  = ans.get(i);
-        }
         return answer;
     }
+
 }
