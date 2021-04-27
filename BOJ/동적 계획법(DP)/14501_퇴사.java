@@ -1,61 +1,44 @@
 import java.io.*;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-class Work {
-    private int time;
-    private int value;
+public class Main {
 
-    public int getTime() {
-        return time;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    Work(int time, int value){
-        this.time = time;
-        this.value = value;
-    }
-}
-
-public class 14501_퇴사 {
     public static int n;
-    public static ArrayList<Work> list;
+    public static int[] time;
+    public static int[] value;
     public static int[] dp;
-    public static int maxVal;
 
     public static void main(String[] args) throws IOException {
-        list = new ArrayList<>();
-        list.add(new Work(0,0));
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        n =Integer.parseInt(st.nextToken());
-        dp = new int[n+2];
-        for(int i=1;i<=n;i++){
+        n = Integer.parseInt(st.nextToken());
+        time = new int[n+1];
+        value = new int[n+1];
+        dp = new int[n+1];
+
+        for(int i=0; i<n; i++){
             st = new StringTokenizer(br.readLine());
-            int time = Integer.parseInt(st.nextToken());
-            int value = Integer.parseInt(st.nextToken());
-            list.add(new Work(time, value));
+            time[i] = Integer.parseInt(st.nextToken());
+            value[i] = Integer.parseInt(st.nextToken());
         }
 
-        for(int i=n;i>0;i--){
-            int nowTime = list.get(i).getTime();
-            int nowValue = list.get(i).getValue();
-            if(i+nowTime-1<=n){
-                dp[i] = Math.max(maxVal,nowValue+dp[i+nowTime]);
-                maxVal = Math.max(maxVal,dp[i]);
+        int res = 0;
+        for(int i=n-1; i>=0; i--){
+            int totTime = time[i] + i;
+            if(totTime>n) dp[i] = res;
+            else {
+                dp[i] = Math.max(res, value[i]+dp[totTime]);
+                res = dp[i];
             }
-            else dp[i] = maxVal;
         }
-        bw.write(String.valueOf(maxVal)+"\n");
+
+        bw.write(String.valueOf(res)+"\n");
         bw.flush();
         br.close();
         bw.close();
+
     }
 }
