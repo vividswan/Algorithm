@@ -1,91 +1,62 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.PriorityQueue;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
-class Node implements Comparable<Node>{
-    private final int idx;
-    private final int value;
+public class Main {
 
-    public int getIdx() {
-        return idx;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public Node(int idx, int value){
-        this.idx = idx;
-        this.value = value;
-    }
-
-    @Override
-    public int compareTo(Node other) {
-        return Integer.compare(this.value, other.value);
-    }
-}
-
-public class 6118_숨바꼭질 {
-    public static int n,m;
-    public static final  int INF = (int) 1e9;
-    public static ArrayList<ArrayList<Integer>> arr =  new ArrayList<ArrayList<Integer>>();
+    public static int n,m,maxValue;
+    public static ArrayList<ArrayList<Integer>> arr = new ArrayList<ArrayList<Integer>>();
     public static int[] distTable;
-    public static void dijkstra(){
-        distTable[1] = 0;
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.offer(new Node(1,0));
-        while(!pq.isEmpty()){
-            Node node = pq.poll();
-            int idx = node.getIdx();
-            int value = node.getValue();
-            for(int i=0;i<arr.get(idx).size();i++){
-                int next = arr.get(idx).get(i);
-                if(value+1 < distTable[next]){
-                    distTable[next] = value+1;
-                    pq.offer(new Node(next,distTable[next]));
-                }
-            }
-        }
-    }
 
     public static void main(String[] args) throws IOException {
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         StringTokenizer st = new StringTokenizer(br.readLine());
+
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
 
+        for(int i=0; i<=n; i++) arr.add(new ArrayList<>());
         distTable = new int[n+1];
-        Arrays.fill(distTable,INF);
+        for(int i=1; i<=n; i++) distTable[i] = -1;
 
-        for(int i=0; i<=n; i++) arr.add(new ArrayList<Integer>());
-        for(int i=1; i<=m; i++){
-            int x, y;
+        for(int i=0; i<m; i++){
             st = new StringTokenizer(br.readLine());
-            x = Integer.parseInt(st.nextToken());
-            y = Integer.parseInt(st.nextToken());
-            arr.get(x).add(y);
-            arr.get(y).add(x);
+            int go = Integer.parseInt(st.nextToken());
+            int ed = Integer.parseInt(st.nextToken());
+
+            arr.get(go).add(ed);
+            arr.get(ed).add(go);
         }
-        dijkstra();
-        int maxDist = 0;
-        int resIdx = 0;
-        int cnt = 0;
-        for(int i=2; i<=n; i++){
-            int beforeMaxDist = maxDist;
-            maxDist = Math.max(distTable[i],maxDist);
-            if(beforeMaxDist!=maxDist) {
-                resIdx = i;
-                cnt = 0;
+
+        distTable[1] = 0;
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(1);
+        while (!q.isEmpty()){
+            int now = q.poll();
+            for(int i=0; i<arr.get(now).size();i++){
+                int next = arr.get(now).get(i);
+                if(distTable[next]!=-1) continue;
+                distTable[next] = distTable[now]+1;
+                maxValue = Math.max(maxValue,distTable[next]);
+                q.offer(next);
             }
-            if (maxDist==distTable[i]) cnt++;
         }
-        bw.write(String.valueOf(resIdx)+" "+String.valueOf(distTable[resIdx])+" "+String.valueOf(cnt)+"\n");
+        int resIdx = 0;
+        int resCnt = 0;
+        for(int i=1; i<=n; i++){
+            if(resIdx ==0 && distTable[i] == maxValue) resIdx = i;
+            if(distTable[i] == maxValue) resCnt++;
+        }
+
+        bw.write(String.valueOf(resIdx)+" "+String.valueOf(maxValue)+" "+String.valueOf(resCnt));
         bw.flush();
         br.close();
         bw.close();
+
     }
 }
