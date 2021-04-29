@@ -1,12 +1,11 @@
 import java.io.*;
 import java.util.StringTokenizer;
 
-public class 못생긴 수 {
+public class Main {
 
-    public static int n;
-    public static int idxOf2 = 1, idxOf3 = 1, idxOf5 = 1;
-    public static int valueOf2 = 2, valueOf3 =3, valueOf5 = 5;
-    public static int[] value;
+    public static int twoIdx, threeIdx, fiveIdx, n;
+    public static int idx = 1;
+    public  static int[] dp = new int[1001];
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -14,28 +13,29 @@ public class 못생긴 수 {
 
         StringTokenizer st = new StringTokenizer(br.readLine());
         n = Integer.parseInt(st.nextToken());
-        value = new int[n+1];
 
-        value[1] = 1;
-
-        for(int i=2; i<=n; i++){
-            int next = Math.min(valueOf2, Math.min(valueOf3,valueOf5));
-            value[i] = next;
-            if(next == valueOf2){
-                idxOf2++;
-                valueOf2 = value[idxOf2] * 2;
+        dp[1] = 1;
+        twoIdx = 1;
+        threeIdx = 1;
+        fiveIdx = 1;
+        while(idx<1000){
+            idx++;
+            int minVal = Math.min(dp[twoIdx]*2, dp[threeIdx]*3);
+            minVal = Math.min(minVal,dp[fiveIdx]*5);
+            if(minVal == dp[twoIdx]*2){
+                dp[idx] = dp[twoIdx]*2;
+                twoIdx++;
             }
-            if(next == valueOf3){
-                idxOf3++;
-                valueOf3 = value[idxOf3] * 3;
+            if(minVal == dp[threeIdx]*3){
+                dp[idx] = dp[threeIdx]*3;
+                threeIdx++;
             }
-            if(next == valueOf5){
-                idxOf5++;
-                valueOf5 = value[idxOf5] * 5;
+            if(minVal == dp[fiveIdx]*5) {
+                dp[idx] = dp[fiveIdx]*5;
+                fiveIdx++;
             }
         }
-
-        bw.write(String.valueOf(value[n])+"\n");
+        bw.write(String.valueOf(dp[n])+"\n");
         bw.flush();
         br.close();
         bw.close();
