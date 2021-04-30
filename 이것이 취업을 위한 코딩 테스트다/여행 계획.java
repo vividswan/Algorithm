@@ -1,19 +1,25 @@
 import java.io.*;
 import java.util.StringTokenizer;
 
-public class 여행 계획 {
+public class Main {
+
     public static int n,m;
-    public static int[] parent;
+    public static int[][] map;
+    public static  int[] parent;
     public static int find(int idx){
-        if(parent[idx]==idx) return idx;
-        else return parent[idx]= find(parent[idx]);
+        if(parent[idx] == idx) return idx;
+        else return parent[idx] = find(parent[idx]);
     }
-    public static void merge(int x, int y){
-        x = find(x);
-        y = find(y);
-        if(x==y) return;
-        if(x < y) parent[y] = x;
-        else parent[x] = y;
+    public static void merge(int a, int b){
+        a = find(a);
+        b = find(b);
+        if(a==b) return;
+        if(a>b) {
+            int temp = a;
+            a = b;
+            b = temp;
+        }
+        parent[b] = a;
     }
 
     public static void main(String[] args) throws IOException {
@@ -23,28 +29,34 @@ public class 여행 계획 {
         StringTokenizer st = new StringTokenizer(br.readLine());
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
-
+        map = new int[n+1][n+1];
         parent = new int[n+1];
-        for(int i=1;i<=n;i++) parent[i] = i;
-
-        for(int i=1;i<=n;i++){
+        for(int i=1; i<=n; i++) parent[i] = i;
+        for(int i=1; i<=n; i++){
             st = new StringTokenizer(br.readLine());
-            for(int j=1;j<=n;j++){
-                int now = Integer.parseInt(st.nextToken());
-                if(now==0) continue;
-                merge(i,j);
+            for(int j=1; j<=n; j++){
+                map[i][j] = Integer.parseInt(st.nextToken());
+                if(map[i][j]==1) merge(i,j);
             }
         }
-        boolean isPossible = true;
         st = new StringTokenizer(br.readLine());
-        int resIdx = find(Integer.parseInt(st.nextToken()));
-        for(int i=2; i<=m;i++){
-            if(resIdx!=find(Integer.parseInt(st.nextToken()))) isPossible = false;
+        int resParent = 0;
+        boolean isRight = true;
+        for(int i=0; i<m; i++){
+            int idx = Integer.parseInt(st.nextToken());
+            if(resParent==0) resParent = find(idx);
+            else {
+                if(resParent != find(idx)){
+                    isRight = false;
+                    break;
+                }
+            }
         }
-        if(isPossible) bw.write("YES\n");
+        if(isRight) bw.write("YES\n");
         else bw.write("NO\n");
         bw.flush();
         br.close();
         bw.close();
+
     }
 }
