@@ -2,10 +2,15 @@ import java.io.*;
 import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
-class Node implements  Comparable<Node>{
+class Node implements Comparable<Node>{
     private int x;
     private int y;
-    private int value;
+    private int val;
+    public Node(int val, int x, int y){
+        this.val = val;
+        this.x = x;
+        this.y = y;
+    }
 
     public int getX() {
         return x;
@@ -15,54 +20,24 @@ class Node implements  Comparable<Node>{
         return y;
     }
 
-    public int getValue() {
-        return value;
-    }
-
-    public Node(int x, int y, int value){
-        this.x = x;
-        this.y = y;
-        this.value = value;
+    public int getVal() {
+        return val;
     }
 
     @Override
     public int compareTo(Node other) {
-        return Integer.compare(this.value, other.value);
+        return Integer.compare(this.val, other.val);
     }
 }
 
-public class 화성 탐사 {
-    public static int t, n;
-    public static int[][] map;
-    public static int[][] distTable;
-    public static PriorityQueue<Node> pq;
-    public static final int INF = (int) 1e9;
-    public static int dx[] = {1,-1,0,0};
-    public static int dy[] = {0,0,1,-1};
+public class Main {
 
-    public static void dijkstra(){
-        distTable[1][1]=map[1][1];
-        Node firstNode = new Node(1,1,distTable[1][1]);
-        pq = new PriorityQueue<>();
-        pq.offer(firstNode);
-        while(!pq.isEmpty()){
-            Node node = pq.poll();
-            int x = node.getX();
-            int y = node.getY();
-            for(int i=0;i<4;i++){
-                int nx = x + dx[i];
-                int ny = y + dy[i];
-                if(nx<1||ny<1||nx>n||ny>n) continue;
-                int nextValue = distTable[x][y] + map[nx][ny];
-                if(nextValue < distTable[nx][ny]){
-                    Node nextNode = new Node(nx,ny,nextValue);
-                    distTable[nx][ny] = nextValue;
-                    pq.offer(nextNode);
-                }
-            }
-        }
-        return;
-    }
+    public static int t;
+    public static int n;
+    public static int[][] map;
+    public static  boolean[][] vis;
+    public static  int[] dx ={0,0,1,-1};
+    public static  int[] dy ={1,-1,0,0};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -73,21 +48,44 @@ public class 화성 탐사 {
 
         for(int k=0; k<t; k++){
             st = new StringTokenizer(br.readLine());
+
             n = Integer.parseInt(st.nextToken());
             map = new int[n+1][n+1];
-            distTable = new int[n+1][n+1];
-            for(int i=1;i<=n;i++){
+            vis = new boolean[n+1][n+1];
+            int res = 0;
+
+            for(int i=1; i<=n; i++){
                 st = new StringTokenizer(br.readLine());
                 for(int j=1; j<=n; j++){
                     map[i][j] = Integer.parseInt(st.nextToken());
-                    distTable[i][j] = INF;
                 }
             }
-            dijkstra();
-            bw.write(String.valueOf(distTable[n][n])+"\n");
+            PriorityQueue<Node> pq = new PriorityQueue<>();
+            pq.offer(new Node(map[1][1],1,1));
+            vis[1][1] = true;
+            while(!pq.isEmpty()){
+                Node node = pq.poll();
+                int x = node.getX();
+                int y = node.getY();
+                int val = node.getVal();
+                if(x==n&&y==n) res = val;
+                for(int i=0; i<4; i++){
+                    int nx = x +dx[i];
+                    int ny = y +dy[i];
+                    if(nx<1||ny<1||nx>n||ny>n) continue;
+                    if(vis[nx][ny]) continue;
+                    vis[nx][ny] = true;
+                    pq.offer(new Node(val+map[nx][ny],nx,ny));
+                }
+            }
+            bw.write(String.valueOf(res)+"\n");
+
         }
         bw.flush();
         br.close();
         bw.close();
+
+
     }
+
 }
