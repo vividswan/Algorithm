@@ -3,10 +3,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.StringTokenizer;
 
-class Node{
+class Dist implements Comparable<Dist>{
     private int x;
     private int y;
-    private int z;
+    private int val;
+
+    public Dist(int x, int y, int val){
+        this.x = x;
+        this.y = y;
+        this.val = val;
+    }
 
     public int getX() {
         return x;
@@ -16,139 +22,110 @@ class Node{
         return y;
     }
 
-    public int getZ() {
-        return z;
+    public int getVal() {
+        return val;
     }
 
-    public Node(int x, int  y, int z){
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    @Override
+    public int compareTo(Dist other) {
+        return Integer.compare(this.val, other.val);
     }
 }
 
-class Pair implements Comparable<Pair>{
+class DotDist implements Comparable<DotDist>{
     private int idx;
-    private int value;
-    public Pair(int idx, int value){
+    private int val;
+    public DotDist(int idx, int val){
         this.idx = idx;
-        this.value = value;
+        this.val =val;
+    }
+
+    public int getVal() {
+        return val;
     }
 
     public int getIdx() {
         return idx;
     }
 
-    public int getValue() {
-        return value;
-    }
-
     @Override
-    public int compareTo(Pair other) {
-        return Integer.compare(this.value,other.value);
+    public int compareTo(DotDist other) {
+        return Integer.compare(this.val,other.val);
     }
 }
 
-class ConnectSpace implements Comparable<ConnectSpace>{
-    private int go;
-    private int ed;
-    private int value;
+public class Main {
 
-    public ConnectSpace(int go, int ed, int value){
-        this.go = go;
-        this.ed = ed;
-        this.value = value;
+    public static int[] parent;
+    public static int find(int idx){
+        if(idx==parent[idx]) return idx;
+        else return  parent[idx] = find(parent[idx]);
     }
 
-    public int getGo() {
-        return go;
-    }
+    public static void merge(int a, int b){
+        a = find(a);
+        b= find(b);
 
-    public int getEd() {
-        return ed;
-    }
+        if(a==b) return;
 
-    public int getValue() {
-        return value;
-    }
-
-    @Override
-    public int compareTo(ConnectSpace other) {
-        return Integer.compare(this.value,other.value);
-    }
-}
-
-public class 행성 터널 {
-
-    public static ArrayList<Node> nodeArr = new ArrayList<>();
-    public static ArrayList<Pair> xArr = new ArrayList<>();
-    public static ArrayList<Pair> yArr = new ArrayList<>();
-    public static ArrayList<Pair> zArr = new ArrayList<>();
-    public static ArrayList<ConnectSpace> searchArr = new ArrayList<>();
-    public static int calcDist(Node a, Node b){
-        return Math.min(Math.abs(a.getX()-b.getX()) , Math.min(Math.abs(a.getY()-b.getY()) , Math.abs(a.getZ() - b.getZ())));
+        if(a>b) parent[a] = b;
+        else parent[b] = a;
     }
 
     public static int n;
-    public static int[] parent;
-    public static int sum;
-    public static int find(int idx){
-        if(idx==parent[idx]) return idx;
-        else return parent[idx] = find(parent[idx]);
-    }
-    public static void merge(int x ,int y){
-        x = find(x);
-        y = find(y);
-        if(x==y) return;
-        if(x<y) parent[y] = x;
-        else parent[x] = y;
-    }
+    public static ArrayList<DotDist> dotX = new ArrayList<>();
+    public static ArrayList<DotDist> dotY = new ArrayList<>();
+    public static ArrayList<DotDist> dotZ = new ArrayList<>();
+    public static ArrayList<Dist> list = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         StringTokenizer st = new StringTokenizer(br.readLine());
-        n = Integer.parseInt(st.nextToken());
+        n =Integer.parseInt(st.nextToken());
         parent = new int[n];
-        for(int i=0; i<n; i++) parent[i] = i;
-        for(int i=0;i<n;i++){
+        for(int i = 0; i<n; i++) parent[i] = i;
+
+        for(int i=0; i<n; i++){
             st = new StringTokenizer(br.readLine());
-            int x = Integer.parseInt(st.nextToken());
-            int y = Integer.parseInt(st.nextToken());
-            int z = Integer.parseInt(st.nextToken());
-            nodeArr.add(new Node(x,y,z));
-            xArr.add(new Pair(i,x));
-            yArr.add(new Pair(i,y));
-            zArr.add(new Pair(i,z));
+            int a,b,c;
+            a = Integer.parseInt(st.nextToken());
+            b =Integer.parseInt(st.nextToken());
+            c = Integer.parseInt(st.nextToken());
+            dotX.add(new DotDist(i, a));
+            dotY.add(new DotDist(i, b));
+            dotZ.add(new DotDist(i, c));
         }
 
-        Collections.sort(xArr);
-        Collections.sort(yArr);
-        Collections.sort(zArr);
+        Collections.sort(dotX);
+        Collections.sort(dotY);
+        Collections.sort(dotZ);
 
         for(int i=0; i<n-1; i++){
-            searchArr.add(new ConnectSpace(xArr.get(i).getIdx(), xArr.get(i+1).getIdx() , calcDist(nodeArr.get(xArr.get(i).getIdx()),nodeArr.get(xArr.get(i+1).getIdx()))));
-            searchArr.add(new ConnectSpace(yArr.get(i).getIdx(), yArr.get(i+1).getIdx() , calcDist(nodeArr.get(yArr.get(i).getIdx()),nodeArr.get(yArr.get(i+1).getIdx()))));
-            searchArr.add(new ConnectSpace(zArr.get(i).getIdx(), zArr.get(i+1).getIdx() , calcDist(nodeArr.get(zArr.get(i).getIdx()),nodeArr.get(zArr.get(i+1).getIdx()))));
+            list.add(new Dist(dotX.get(i).getIdx(),dotX.get(i+1).getIdx(), Math.abs(dotX.get(i).getVal()-dotX.get(i+1).getVal())));
+            list.add(new Dist(dotY.get(i).getIdx(),dotY.get(i+1).getIdx(), Math.abs(dotY.get(i).getVal()-dotY.get(i+1).getVal())));
+            list.add(new Dist(dotZ.get(i).getIdx(),dotZ.get(i+1).getIdx(), Math.abs(dotZ.get(i).getVal()-dotZ.get(i+1).getVal())));
         }
 
-        Collections.sort(searchArr);
+        Collections.sort(list);
 
-        for(int i=0; i<searchArr.size();i++){
-            int go = searchArr.get(i).getGo();
-            int ed = searchArr.get(i).getEd();
-            int value = searchArr.get(i).getValue();
-
-            if(find(go)==find(ed)) continue;
+        int tot = 0;
+        for(int i=0; i<list.size(); i++){
+            Dist dist = list.get(i);
+            int x = dist.getX();
+            int y = dist.getY();
+            int val = dist.getVal();
+            if(find(x)==find(y)) continue;
             else {
-                merge(go,ed);
-                sum += value;
+                merge(x,y);
+                tot+=val;
             }
         }
-        bw.write(String.valueOf(sum)+"\n");
+        bw.write(String.valueOf(tot)+"\n");
         bw.flush();
         br.close();
         bw.close();
+
     }
 }
