@@ -5,61 +5,47 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.StringTokenizer;
 
 public class Main {
-	public static boolean success;
-	public static List<Integer> valueList = new ArrayList<>();
-	public static List<Boolean> checkArray = new ArrayList<>();
-	public static List<Integer> ansList = new ArrayList<>();
-	public static void recursion(int idx, int cnt) {
-		if (success) return;
-		if (cnt == 7) {
-			int tempSum = 0;
-			for (int i = 1; i < checkArray.size(); i++) {
-				if (checkArray.get(i))
-					tempSum += valueList.get(i);
-			}
-			if (tempSum == 100) {
-				for (int i = 1; i < checkArray.size(); i++) {
-					if (checkArray.get(i))
-						ansList.add(valueList.get(i));
-				}
-				success = true;
-			}
+	static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+	static final int STATIC_TOTAL_INT = 9;
+	static final int STATIC_SELECTED_INT = 7;
+	static boolean recurEnd = false;
+	static ArrayList<Integer> intArr = new ArrayList<>();
+	static boolean[] checkArr = new boolean[STATIC_TOTAL_INT];
+	static void recurFunc(int idx, int cnt, int sum) throws IOException {
+		if (recurEnd) {
+			return;
 		}
-		else {
-			for (int i = idx; i <= 9; i++) {
-				if (checkArray.get(i)) continue;
-				checkArray.set(i, true);
-				recursion(idx+1, cnt+1);
-				checkArray.set(i, false);
+		if (cnt == STATIC_SELECTED_INT && sum == 100) {
+			recurEnd = true;
+			for (int i =0; i < STATIC_TOTAL_INT; i++){
+				if (checkArr[i]) {
+					bw.write(intArr.get(i)+"\n");
+				}
+			}
+			bw.flush();
+			bw.close();
+			br.close();
+			return;
+		}
+		for (int i =idx; i < STATIC_TOTAL_INT; i++){
+			if (!checkArr[i]) {
+				checkArr[i] = true;
+				recurFunc(i, cnt+1, sum + intArr.get(i));
+				checkArr[i] = false;
 			}
 		}
 	}
 
 	public static void main(String[] args) throws IOException {
-		success = false;
-		for (int i = 0; i <= 9; i++) {
-			checkArray.add(false);
+		for (int i = 0; i < STATIC_TOTAL_INT; i++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			intArr.add(Integer.parseInt(st.nextToken()));
 		}
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		StringTokenizer st;
-		valueList = new ArrayList<>();
-		valueList.add(0);
-		for (int i = 1; i <= 9; i++) {
-			st = new StringTokenizer(br.readLine());
-			valueList.add(Integer.parseInt(st.nextToken()));
-		}
-		recursion(1,0);
-		Collections.sort(ansList);
-		for (Integer number : ansList) {
-			bw.write(number+"\n");
-		}
-		bw.flush();
-		br.close();
-		bw.close();
+		Collections.sort(intArr);
+		recurFunc(0, 0, 0);
 	}
 }
